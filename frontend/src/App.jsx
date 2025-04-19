@@ -1,58 +1,121 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import HeaderTabs from "./components/HeaderTabs";
 import PlayerSelection from "./components/PlayerSelections";
 import ActionsGrid from "./components/ActionsGrid";
 import ScorePanel from "./components/ScorePanel";
 import CommentaryLog from "./components/CommentaryLog";
-import { initMatch, getMatchData } from "./services/api";
+import { getMatchData, initMatch } from "./services/api";
+
+// Sample team & player data
+const DEFAULT_TEAM_A = "Team Alpha";
+const DEFAULT_TEAM_B = "Team Beta";
+const DEFAULT_PLAYERS = [
+  { playerId: "p1", name: "Player 1", team: "Team Alpha" },
+  { playerId: "p2", name: "Player 2", team: "Team Alpha" },
+  { playerId: "p3", name: "Player 3", team: "Team Beta" },
+  { playerId: "p4", name: "Player 4", team: "Team Beta" },
+];
 
 const App = () => {
-  const [matchId, setMatchId] = useState(null);
+  const [matchId, setMatchId] = useState(() => {
+    // Load matchId from localStorage if available
+    return localStorage.getItem("matchId") || null;
+  });
   const [matchData, setMatchData] = useState(null);
+  const [loading, setLoading] = useState(false);
 
+  // Selected players for current delivery
+  const [selectedStriker, setSelectedStriker] = useState(null);
+  const [selectedNonStriker, setSelectedNonStriker] = useState(null);
+  const [selectedBowler, setSelectedBowler] = useState(null);
+
+  // Start or restart a match
   const startNewMatch = async () => {
-    const teamA = "Team A Name";
-    const teamB = "Team B Name";
     try {
-      const match = await initMatch(teamA, teamB);
-      const id = match._id || match.id || null;
-      setMatchId(id);
-      if (id) {
-        const data = await getMatchData(id);
-        setMatchData(data);
+      setLoading(true);
+      const data = await initMatch(
+        DEFAULT_TEAM_A,
+        DEFAULT_TEAM_B,
+        DEFAULT_PLAYERS
+      );
+      if (data?._id) {
+        setMatchId(data._id);
+        localStorage.setItem("matchId", data._id); // Save matchId to localStorage
+        setMatchData(null); // Clear previous match data
+        // Initialize selected players with first players from teams
+        setSelectedStriker(DEFAULT_PLAYERS[0].playerId);
+        setSelectedNonStriker(DEFAULT_PLAYERS[1].playerId);
+        setSelectedBowler(DEFAULT_PLAYERS[1].playerId);
+      } else {
+        console.error("Match ID not returned");
       }
-    } catch (error) {
-      console.error("Failed to initialize match:", error);
+    } catch (err) {
+      console.error("Error initializing match:", err);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const refreshMatchData = async (updatedMatch) => {
-    setMatchData(updatedMatch);
-  };
+  // Fetch match data when matchId is ready
+  useEffect(() => {
+    if (!matchId) return;
+
+    const fetchData = async () => {
+      try {
+        const data = await getMatchData(matchId);
+        setMatchData(data);
+      } catch (err) {
+        console.error("Error fetching match data:", err);
+      }
+    };
+
+    fetchData();
+  }, [matchId]);
+
+ 
+
 
   return (
     <div className="min-h-screen p-6 bg-gray-100">
       <HeaderTabs />
-      <button
-        onClick={startNewMatch}
-        className="mb-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-      >
-        Start New Match
-      </button>
-      {matchId ? (
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mt-6">
-          <div className="lg:col-span-3 space-y-6">
-            <PlayerSelection matchId={matchId} />
-            <ActionsGrid matchId={matchId} onUpdate={refreshMatchData} />
-          </div>
-          <div>
-            <ScorePanel matchId={matchId} matchData={matchData} />
-            <CommentaryLog matchId={matchId} matchData={matchData} />
-          </div>
+
+      <div className="flex justify-end mb-4">
+        <button
+          onClick={startNewMatch}
+          className="px-4 py-2 hover:cursor-pointer bg-blue-500 text-white rounded hover:bg-blue-700 transition"
+          disabled={loading}
+        >
+          {loading ? "Starting..." : "Start New Match"}
+        </button>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <div className="lg:col-span-3 space-y-6">
+          {matchId && matchData && (
+            <>
+              <PlayerSelection
+                matchId={matchId}
+                selectedStriker={selectedStriker}
+                setSelectedStriker={setSelectedStriker}
+                selectedNonStriker={selectedNonStriker}
+                setSelectedNonStriker={setSelectedNonStriker}
+                selectedBowler={selectedBowler}
+                setSelectedBowler={setSelectedBowler}
+              />
+              <ActionsGrid
+                matchId={matchId}
+                strikerId={selectedStriker}
+                bowlerId={selectedBowler}
+                onUpdate={(updatedMatch) => setMatchData(updatedMatch)}
+              />
+            </>
+          )}
         </div>
-      ) : (
-        <div>Please start a new match to begin.</div>
-      )}
+        <div>
+          <ScorePanel matchId={matchId} matchData={matchData} />
+          <CommentaryLog matchId={matchId} matchData={matchData} />
+        </div>
+      </div>
     </div>
   );
 };

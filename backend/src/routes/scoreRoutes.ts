@@ -24,16 +24,12 @@ import {
 
 const router = express.Router();
 
-// Create a new match
 router.post('/init', initMatch);
 
-// Add a new delivery to the match
 router.post('/:id/delivery', addDelivery);
 
-// Get match data
 router.get('/:id', getMatch);
 
-// Undo the last delivery
 router.patch('/:id/undo', undoDelivery);
 
 export default router;

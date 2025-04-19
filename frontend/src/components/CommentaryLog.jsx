@@ -25,7 +25,7 @@ const CommentaryLog = ({ matchId }) => {
   }, [matchId]);
 
   return (
-    <div className="mt-6 bg-white p-4 shadow rounded">
+    <div className="mt-6 bg-white p-4 shadow rounded overflow-y-scroll h-50 ">
       <div className="font-semibold mb-2">Ball-by-Ball Commentary</div>
       <ul className="space-y-2">
         {logs.map((log) => (

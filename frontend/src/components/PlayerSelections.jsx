@@ -1,19 +1,23 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { getPlayers, getBowlers } from "../services/api";
 
-const PlayerSelection = ({ matchId }) => {
+const PlayerSelection = ({
+  matchId,
+  selectedStriker,
+  setSelectedStriker,
+  selectedNonStriker,
+  setSelectedNonStriker,
+  selectedBowler,
+  setSelectedBowler,
+}) => {
   const [batsmen, setBatsmen] = useState([]);
   const [bowlers, setBowlers] = useState([]);
-  const [selected, setSelected] = useState({
-    striker: "",
-    nonStriker: "",
-    bowler: "",
-  });
 
   useEffect(() => {
     if (matchId) {
       getPlayers(matchId).then((players) => {
         setBatsmen(players.map((p) => p.playerId || p.name || p));
+        // console.log("Batsmen data:", players);
       });
       getBowlers(matchId).then((bowlersData) => {
         setBowlers(bowlersData.map((p) => p.playerId || p.name || p));
@@ -27,10 +31,8 @@ const PlayerSelection = ({ matchId }) => {
         <label className="block mb-1 font-semibold">Batsman (Striker)</label>
         <select
           className="w-full p-2 border border-gray-300 rounded"
-          value={selected.striker}
-          onChange={(e) =>
-            setSelected({ ...selected, striker: e.target.value })
-          }
+          value={selectedStriker || ""}
+          onChange={(e) => setSelectedStriker(e.target.value)}
         >
           {batsmen.map((b) => (
             <option key={b} value={b}>
@@ -40,15 +42,11 @@ const PlayerSelection = ({ matchId }) => {
         </select>
       </div>
       <div>
-        <label className="block mb-1 font-semibold">
-          Batsman (Non Striker)
-        </label>
+        <label className="block mb-1 font-semibold">Batsman (Non Striker)</label>
         <select
           className="w-full p-2 border border-gray-300 rounded"
-          value={selected.nonStriker}
-          onChange={(e) =>
-            setSelected({ ...selected, nonStriker: e.target.value })
-          }
+          value={selectedNonStriker || ""}
+          onChange={(e) => setSelectedNonStriker(e.target.value)}
         >
           {batsmen.map((b) => (
             <option key={b} value={b}>
@@ -61,8 +59,8 @@ const PlayerSelection = ({ matchId }) => {
         <label className="block mb-1 font-semibold">Bowler</label>
         <select
           className="w-full p-2 border border-gray-300 rounded"
-          value={selected.bowler}
-          onChange={(e) => setSelected({ ...selected, bowler: e.target.value })}
+          value={selectedBowler || ""}
+          onChange={(e) => setSelectedBowler(e.target.value)}
         >
           {bowlers.map((b) => (
             <option key={b} value={b}>

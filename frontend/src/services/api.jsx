@@ -8,6 +8,7 @@ export const initMatch = async (teamA, teamB, players) => {
     teamB,
     players,
   });
+  console.log("Match initialized:", response.data);
   return response.data;
 };
 
@@ -45,6 +46,7 @@ export const getBowlers = async (matchId) => {
 export const getScoreCard = async (matchId) => {
   try {
     const match = await getMatchData(matchId);
+    console.log("Scorecard data:", match);
     return {
       totalRuns: match.score?.totalRuns || 0,
       wickets: match.score?.wickets || 0,
