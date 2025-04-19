@@ -36,8 +36,8 @@ const App = () => {
       );
       if (data?._id) {
         setMatchId(data._id);
-        localStorage.setItem("matchId", data._id); 
-        setMatchData(null); 
+        localStorage.setItem("matchId", data._id);
+        setMatchData(null);
         setSelectedStriker(DEFAULT_PLAYERS[0].playerId);
         setSelectedNonStriker(DEFAULT_PLAYERS[1].playerId);
         setSelectedBowler(DEFAULT_PLAYERS[1].playerId);
@@ -66,9 +66,6 @@ const App = () => {
     fetchData();
   }, [matchId]);
 
- 
-
-
   return (
     <div className="min-h-screen p-6 bg-gray-100">
       <HeaderTabs />
@@ -76,7 +73,7 @@ const App = () => {
       <div className="flex justify-end mb-4">
         <button
           onClick={startNewMatch}
-          className="px-4 py-2 hover:cursor-pointer bg-blue-500 text-white rounded hover:bg-blue-700 transition"
+          className="px-4 py-4 my-4v hover:cursor-pointer bg-blue-500 text-white rounded hover:bg-blue-700 transition"
           disabled={loading}
         >
           {loading ? "Starting..." : "Start New Match"}
