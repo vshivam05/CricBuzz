@@ -5,12 +5,18 @@ const ScorePanel = ({ matchData }) => {
 
   const totalRuns = matchData.score?.totalRuns || 0;
   const wickets = matchData.score?.wickets || 0;
-  const overs =
-    (matchData.currentOver || 0) + (matchData.currentBall || 0) / 6;
 
-  const summary = `${totalRuns} runs, ${wickets} wickets, ${overs.toFixed(
-    1
-  )} overs`;
+  // Format overs like "3.2" instead of "3.333"
+  const overs = `${matchData.currentOver || 0}.${matchData.currentBall || 0}`;
+
+  console.log(
+    "ScorePanel data:",
+    matchData.currentOver,
+    matchData.currentBall,
+    overs
+  );
+
+  const summary = `${totalRuns} runs, ${wickets} wickets, ${overs} overs`;
 
   const batsmen = (matchData.players || []).map((player) => ({
     name: player.name || player.playerId || "Unknown",
