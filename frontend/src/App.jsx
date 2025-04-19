@@ -6,7 +6,6 @@ import ScorePanel from "./components/ScorePanel";
 import CommentaryLog from "./components/CommentaryLog";
 import { getMatchData, initMatch } from "./services/api";
 
-// Sample team & player data
 const DEFAULT_TEAM_A = "Team Alpha";
 const DEFAULT_TEAM_B = "Team Beta";
 const DEFAULT_PLAYERS = [
@@ -18,18 +17,15 @@ const DEFAULT_PLAYERS = [
 
 const App = () => {
   const [matchId, setMatchId] = useState(() => {
-    // Load matchId from localStorage if available
     return localStorage.getItem("matchId") || null;
   });
   const [matchData, setMatchData] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // Selected players for current delivery
   const [selectedStriker, setSelectedStriker] = useState(null);
   const [selectedNonStriker, setSelectedNonStriker] = useState(null);
   const [selectedBowler, setSelectedBowler] = useState(null);
 
-  // Start or restart a match
   const startNewMatch = async () => {
     try {
       setLoading(true);
@@ -40,9 +36,8 @@ const App = () => {
       );
       if (data?._id) {
         setMatchId(data._id);
-        localStorage.setItem("matchId", data._id); // Save matchId to localStorage
-        setMatchData(null); // Clear previous match data
-        // Initialize selected players with first players from teams
+        localStorage.setItem("matchId", data._id); 
+        setMatchData(null); 
         setSelectedStriker(DEFAULT_PLAYERS[0].playerId);
         setSelectedNonStriker(DEFAULT_PLAYERS[1].playerId);
         setSelectedBowler(DEFAULT_PLAYERS[1].playerId);
@@ -56,7 +51,6 @@ const App = () => {
     }
   };
 
-  // Fetch match data when matchId is ready
   useEffect(() => {
     if (!matchId) return;
 
