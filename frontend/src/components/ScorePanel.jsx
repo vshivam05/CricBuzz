@@ -6,15 +6,14 @@ const ScorePanel = ({ matchData }) => {
   const totalRuns = matchData.score?.totalRuns || 0;
   const wickets = matchData.score?.wickets || 0;
 
-  // Format overs like "3.2" instead of "3.333"
   const overs = `${matchData.currentOver || 0}.${matchData.currentBall || 0}`;
 
-  console.log(
-    "ScorePanel data:",
-    matchData.currentOver,
-    matchData.currentBall,
-    overs
-  );
+  // console.log(
+  //   "ScorePanel data:",
+  //   matchData.currentOver,
+  //   matchData.currentBall,
+  //   overs
+  // );
 
   const summary = `${totalRuns} runs, ${wickets} wickets, ${overs} overs`;
 
